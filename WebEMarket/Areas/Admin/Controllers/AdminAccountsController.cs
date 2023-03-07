@@ -22,8 +22,15 @@ namespace WebEMarket.Areas.Admin.Controllers
         // GET: Admin/AdminAccounts
         public async Task<IActionResult> Index()
         {
-            //1. Push Role right
+            //All of two below ways to retrieve SelectList in ViewBag
+            ////1.0 Push Role right -get from Database  
             ViewData["QuyenTruyCap"] = new SelectList(_context.Roles, "RoleId", "Description");
+
+            //2.0 Push Data for (Status - Trang thai) right - custom myself
+            List<SelectListItem> IsTrangThai = new List<SelectListItem>();
+            IsTrangThai.Add(new SelectListItem() { Text = "Active", Value = "1" });
+            IsTrangThai.Add(new SelectListItem() { Text = "Block", Value = "0" });
+            ViewData["IsTrangThai"] = IsTrangThai;
 
             var dbMarketsContext = _context.Accounts.Include(a => a.Role);
             return View(await dbMarketsContext.ToListAsync());

@@ -15,21 +15,18 @@
 <div class="card">
     <div class="card-body">
         <div class="row m-b-30">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="d-md-flex">
                     <div class="m-b-10 m-r-15">
-
-                        <select class="custom-select" style="min-width: 180px;" asp-items="@ViewBag.QuyenTruyCap">
-                            <option value="" disabled selected>Chọn quyền truy cập</option>
+                        <!--1.1 Call ViewBag from AdminAccountController Index -->
+                        <select class="custom-select" id="idrole" name="idrole" style="min-width: 210px;" asp-items="@ViewBag.QuyenTruyCap">
+                            <option value="0" disabled selected>Chọn quyền truy cập</option>
                         </select>
                     </div>
                     <div class="m-b-10">
-                        <select class="custom-select" style="min-width: 180px;">
-                            <option selected>Status</option>
-                            <option value="all">All</option>
-                            <option value="inStock">In Stock </option>
-                            <option value="outOfStock">Out of Stock</option>
-                        </select>
+                        <select class="custom-select" id="idstatus" name="idstatus" style="min-width: 210px;" asp-items="@ViewBag.IsTrangThai">
+                            <option value="" disabled selected>Chọn trạng thái</option>
+                        </select> 
                     </div>
                 </div>
             </div>
@@ -39,9 +36,10 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>FullName</th>
+                        <th>Họ và tên</th>
                         <th>Email</th>
-                        <th>Phone</th>
+                        <th>Điện thoại</th>
+                        <th>Lần đăng nhập cuối</th>
                         <th>Quyền truy cập</th>
                         <th>Trạng thái</th>
                         <th></th>
@@ -62,6 +60,7 @@
                                 </td>
                                 <td>@item.Email</td>
                                 <td>@item.Phone</td>
+                                <td>@item.LastLogin</td>
                                 <td>@item.Role.Description</td>
                                 <td>
                                     @if (item.Active)
