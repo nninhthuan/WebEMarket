@@ -101,6 +101,10 @@ namespace WebEMarket.Models
             {
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
 
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.Address).HasMaxLength(255);
 
                 entity.Property(e => e.Avatar).HasMaxLength(255);
@@ -128,6 +132,11 @@ namespace WebEMarket.Models
                 entity.Property(e => e.Salt)
                     .HasMaxLength(8)
                     .IsFixedLength(true);
+
+                entity.HasOne(d => d.Location)
+                    .WithMany(p => p.Customers)
+                    .HasForeignKey(d => d.LocationId)
+                    .HasConstraintName("FK_Customers_Locations1");
             });
 
             modelBuilder.Entity<Location>(entity =>
@@ -147,6 +156,12 @@ namespace WebEMarket.Models
 
             modelBuilder.Entity<Order>(entity =>
             {
+                entity.HasIndex(e => e.CustomerId, "CustomerID");
+
+                entity.HasIndex(e => e.CustomerId, "CustomersOrders");
+
+                entity.HasIndex(e => e.OrderDate, "OrderDate");
+
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
@@ -209,15 +224,31 @@ namespace WebEMarket.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
+                entity.HasIndex(e => e.ProductId, "IX_Products");
+
+                entity.HasIndex(e => e.ProductName, "ProductName");
+
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
 
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.Alias).HasMaxLength(255);
+
+                entity.Property(e => e.BestSellers)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CatId).HasColumnName("CatID");
 
                 entity.Property(e => e.DateCreated).HasColumnType("datetime");
 
                 entity.Property(e => e.DateModified).HasColumnType("datetime");
+
+                entity.Property(e => e.HomeFlag)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MetaDesc).HasMaxLength(255);
 
