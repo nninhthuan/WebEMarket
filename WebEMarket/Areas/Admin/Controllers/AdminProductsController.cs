@@ -21,20 +21,33 @@ namespace WebEMarket.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminProducts
-        public IActionResult Index(int? page)
+        public IActionResult Index(int page = 1, int CatID = 0 )
         {
             //3.2 Paged List uses 3 params: pageNumber, pageSize, IsCustomer
-            var pageNumber = page == null || page <= 0 ? 1 : page.Value; //define numbers of page
+            var pageNumber = page; //define numbers of page
             var pageSize = 5;
-            var IsProducts = _context.Products
+
+            List<Product> IsProducts = new List<Product>();
+
+            if(CatID != 0)
+            {
+                IsProducts = _context.Products
+                .AsNoTracking()
+                .Where(x => x.CatId==CatID)
+                .Include(x => x.Cat) //get Category from db Product-Category table
+                .OrderByDescending(x => x.ProductId).ToList();
+            }
+            else
+            {
+                IsProducts = _context.Products
                 .AsNoTracking()
                 .Include(x => x.Cat) //get Category from db Product-Category table
-                .OrderByDescending(x => x.ProductId);
-
-            PagedList<Product> models = new PagedList<Product>(IsProducts, pageNumber, pageSize);
+                .OrderByDescending(x => x.ProductId).ToList();
+            } 
+            PagedList<Product> models = new PagedList<Product>(IsProducts.AsQueryable(), pageNumber, pageSize);
             ViewBag.CurrentPage = pageNumber;
 
-            ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName");
+            ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName", CatID);
 
             return View(models);
         }
