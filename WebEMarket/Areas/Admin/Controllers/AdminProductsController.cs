@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using AspNetCoreHero.ToastNotification.Notyf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using WebEMarket.Helper;
 using WebEMarket.Models;
 
 namespace WebEMarket.Areas.Admin.Controllers
@@ -14,10 +18,12 @@ namespace WebEMarket.Areas.Admin.Controllers
     public class AdminProductsController : Controller
     {
         private readonly dbMarketsContext _context;
+        public INotyfService _notyfService { get; }
 
-        public AdminProductsController(dbMarketsContext context)
+        public AdminProductsController(dbMarketsContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Admin/AdminProducts
@@ -25,7 +31,7 @@ namespace WebEMarket.Areas.Admin.Controllers
         {
             //3.2 Paged List uses 3 params: pageNumber, pageSize, IsCustomer
             var pageNumber = page; //define numbers of page
-            var pageSize = 5;
+            var pageSize = 20;
 
             List<Product> IsProducts = new List<Product>();
 
@@ -33,15 +39,15 @@ namespace WebEMarket.Areas.Admin.Controllers
             {
                 IsProducts = _context.Products
                 .AsNoTracking()
-                .Where(x => x.CatId==CatID)
-                .Include(x => x.Cat) //get Category from db Product-Category table
+                .Where(x => x.CatId == CatID)
+                .Include(x => x.Cat)//get Category from db Product-Category table
                 .OrderByDescending(x => x.ProductId).ToList();
             }
             else
             {
                 IsProducts = _context.Products
                 .AsNoTracking()
-                .Include(x => x.Cat) //get Category from db Product-Category table
+                .Include(x => x.Cat)//get Category from db Product-Category table
                 .OrderByDescending(x => x.ProductId).ToList();
             } 
             PagedList<Product> models = new PagedList<Product>(IsProducts.AsQueryable(), pageNumber, pageSize);
@@ -84,6 +90,7 @@ namespace WebEMarket.Areas.Admin.Controllers
         // GET: Admin/AdminProducts/Create
         public IActionResult Create()
         {
+            ////1.0 Push Role right -get from Database
             ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName");
             return View();
         }
@@ -93,12 +100,28 @@ namespace WebEMarket.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ShortDesc,Description,CatId,Price,Discount,Thumb,Video,DateCreated,DateModified,BestSellers,HomeFlag,Active,Tags,Title,Alias,MetaDesc,MetaKey,UnitslnStock")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,ShortDesc,Description,CatId,Price,Discount,Thumb,Video,DateCreated,DateModified,BestSellers,HomeFlag,Active,Tags,Title,Alias,MetaDesc,MetaKey,UnitslnStock")] Product product, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (ModelState.IsValid)
             {
+                    
+                //first - get name product to normalize
+                product.ProductName = Utilities.ToTitleCase(product.ProductName);
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string image = Utilities.SEOUrl(product.ProductName) + extension;
+                    product.Thumb = await Utilities.UploadFile(fThumb, @"product", image.ToLower());
+                }
+               
+                if (string.IsNullOrEmpty(product.Thumb)) product.Thumb = "default.jpg";
+                product.Alias = Utilities.SEOUrl(product.ProductName);
+                product.DateCreated = DateTime.Now;
+                product.DateModified = DateTime.Now;
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Thêm sản phẩm thành công");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["DanhMuc"] = new SelectList(_context.Categories, "CatId", "CatName", product.CatId);
@@ -127,7 +150,7 @@ namespace WebEMarket.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ShortDesc,Description,CatId,Price,Discount,Thumb,Video,DateCreated,DateModified,BestSellers,HomeFlag,Active,Tags,Title,Alias,MetaDesc,MetaKey,UnitslnStock")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ShortDesc,Description,CatId,Price,Discount,Thumb,Video,DateCreated,DateModified,BestSellers,HomeFlag,Active,Tags,Title,Alias,MetaDesc,MetaKey,UnitslnStock")] Product product, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (id != product.ProductId)
             {
@@ -138,7 +161,18 @@ namespace WebEMarket.Areas.Admin.Controllers
             {
                 try
                 {
+                    product.ProductName = Utilities.ToTitleCase(product.ProductName);
+                    if (fThumb != null)
+                    {
+                        string extension = Path.GetExtension(fThumb.FileName);
+                        string image = Utilities.SEOUrl(product.ProductName) + extension;
+                        product.Thumb = await Utilities.UploadFile(fThumb, @"product", image.ToLower());
+                    }
+                    if (string.IsNullOrEmpty(product.Thumb)) product.Thumb = "default.jpg";
+                    product.Alias = Utilities.SEOUrl(product.ProductName);
+                    product.DateModified = DateTime.Now;
                     _context.Update(product);
+                    _notyfService.Success("Cập nhật thành công");
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -185,6 +219,7 @@ namespace WebEMarket.Areas.Admin.Controllers
             var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+            _notyfService.Success("Xoá sản phẩm thành công");
             return RedirectToAction(nameof(Index));
         }
 
