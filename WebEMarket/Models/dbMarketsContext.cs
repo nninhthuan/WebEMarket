@@ -76,7 +76,7 @@ namespace WebEMarket.Models
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(e => e.CatId)
-                    .HasName("PK__Categori__6A1C8ADA261247E8");
+                    .HasName("PK__Categori__6A1C8ADA895D269F");
 
                 entity.Property(e => e.CatId).HasColumnName("CatID");
 
@@ -224,31 +224,15 @@ namespace WebEMarket.Models
 
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasIndex(e => e.ProductId, "IX_Products");
-
-                entity.HasIndex(e => e.ProductName, "ProductName");
-
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
 
-                entity.Property(e => e.Active)
-                    .IsRequired()
-                    .HasDefaultValueSql("((1))");
-
                 entity.Property(e => e.Alias).HasMaxLength(255);
-
-                entity.Property(e => e.BestSellers)
-                    .IsRequired()
-                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.CatId).HasColumnName("CatID");
 
                 entity.Property(e => e.DateCreated).HasColumnType("datetime");
 
                 entity.Property(e => e.DateModified).HasColumnType("datetime");
-
-                entity.Property(e => e.HomeFlag)
-                    .IsRequired()
-                    .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.MetaDesc).HasMaxLength(255);
 

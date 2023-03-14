@@ -18,9 +18,9 @@ namespace WebEMarket.Models
         public string Video { get; set; }
         public DateTime? DateCreated { get; set; }
         public DateTime? DateModified { get; set; }
-        public bool? BestSellers { get; set; }
-        public bool? HomeFlag { get; set; }
-        public bool? Active { get; set; }
+        public bool BestSellers { get; set; }
+        public bool HomeFlag { get; set; }
+        public bool Active { get; set; }
         public string Tags { get; set; }
         public string Title { get; set; }
         public string Alias { get; set; }

@@ -3,7 +3,7 @@
 @model PagedList.Core.IPagedList<WebEMarket.Models.Product>
 @{
     int CurrentPage = ViewBag.CurrentPage;
-    ViewData["Title"] = "Danh sách sản phẩm" + CurrentPage;
+    ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 @*end 3.3 -  end paged list*@
@@ -127,22 +127,22 @@
                 });
             });
         });
-        //$("#keyword").keyup(function () {
-        //    var strkeyword = $('#keyword').val();
-        //    $.ajax({
-        //        url: '/Admin/Search/FindProduct/',
-        //        datatype: "json",
-        //        type: "POST",
-        //        data: { keyword: strkeyword },
-        //        async: true,
-        //        success: function (results) {
-        //            $("#records_table").html("");
-        //            $("#records_table").html(results);
-        //        },
-        //        error: function (xhr) {
-        //            alert('error');
-        //        }
-        //    })
-        //})
+                //$("#keyword").keyup(function () {
+                //    var strkeyword = $('#keyword').val();
+                //    $.ajax({
+                //        url: '/Admin/Search/FindProduct/',
+                //        datatype: "json",
+                //        type: "POST",
+                //        data: { keyword: strkeyword },
+                //        async: true,
+                //        success: function (results) {
+                //            $("#records_table").html("");
+                //            $("#records_table").html(results);
+                //        },
+                //        error: function (xhr) {
+                //            alert('error');
+                //        }
+                //    })
+                //})
     </script>
     }
