@@ -2,7 +2,7 @@
 @using PagedList.Core.Mvc
 @model PagedList.Core.IPagedList<WebEMarket.Models.Page>
 @{
-    ViewData["Title"] = "Danh sách Page";
+    ViewData["Title"] = "Danh sách Page - Page: " + @ViewBag.CurrentPage;
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 @*end 3.3 -  end paged list*@
