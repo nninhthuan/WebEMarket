@@ -4,7 +4,10 @@
     ViewData["Title"] = "Chỉnh sửa sản phẩm: " + Model.ProductName;
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-
+@section Styles{
+    <link href="~/Adminassets/summernote/summernote-bs4.css" rel="stylesheet" />
+    <link href="~/Adminassets/summernote/summernote.css" rel="stylesheet" />
+ }
 <form asp-controller="AdminProducts" asp-action="Edit" asp-route-id="@Model.ProductId" method="post" enctype="multipart/form-data">
     @*use to upload image for multipart*@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -126,7 +129,7 @@
         <div class="tab-pane fade" id="product-edit-description">
             <div class="card">
                 <div class="card-body">
-                    <div id="Description">
+                    <div id="Description" class="summernote">
                         <label class="font-weight-semibold" for="productName">Mô tả sản phẩm</label>
                         <input type="text" class="form-control" asp-for="Description">
                     </div>
@@ -135,9 +138,28 @@
         </div>
     </div>
 </form>
+
 @section Scripts{
     <!-- page js --> @*to inject some tools to show edit table *@
     <script src="~/adminassets/vendors/select2/select2.min.js"></script>
     <script src="~/adminassets/vendors/quill/quill.min.js"></script>
     <script src="~/adminassets/js/pages/e-commerce-product-edit.js"></script>
+
+    <script>
+        new Quill('#Description', {
+            theme: 'snow'
+        });
+
+        //no work
+        jQuery(document).ready(function () {
+            $('.summernote').summernote({
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+                styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5'],
+                height:200,             //set editor height
+                minHeight: null,        //set minimum height of editor
+                maxHeight: null,        //set maximum height of editor
+                focus: true             //set focus to editable area after initalizing summernote
+            });
+        });
+    </script>
 }
