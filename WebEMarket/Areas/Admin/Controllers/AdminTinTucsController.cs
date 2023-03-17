@@ -26,30 +26,22 @@ namespace WebEMarket.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminTinTucs
-        public async Task<IActionResult>  Index(int? page)
+        public IActionResult Index(int? page)
         {
-            var tin =  _context.TinTucs.Find(2);
-            for(int i = 0; i < 20; i++)
+            var collection = _context.TinTucs.AsNoTracking().ToList();
+            foreach (var item in collection)
             {
-                TinTuc tinTuc = new TinTuc();
-                tinTuc.Title = tin.Title;
-                tinTuc.Published = tin.Published;
-                tinTuc.Alias = tin.Alias;
-                tinTuc.IsHot = tin.IsHot;
-                tinTuc.IsNewfeed = tin.IsNewfeed;
-                tinTuc.CreatedDate = tin.CreatedDate;
-                tinTuc.Contents = tin.Contents;
-                tinTuc.MetaDesc = tin.Title;
-                tinTuc.MetaKey = tin.Title;
-
-                _context.Add(tinTuc);
-                await _context.SaveChangesAsync();
+                if (item.CreatedDate == null)
+                {
+                    item.CreatedDate = DateTime.Now;
+                    _context.Update(item);
+                    _context.SaveChangesAsync();
+                }
             }
-
 
             //3.2 Paged List uses 3 params: pageNumber, pageSize, IsCustomer
             var pageNumber = page == null || page <= 0 ? 1 : page.Value; //define numbers of page
-            var pageSize = 20;
+            var pageSize = 10;
             var IsTinTucs = _context.TinTucs
                 .AsNoTracking()
                 .OrderByDescending(x => x.PostId);
@@ -102,7 +94,7 @@ namespace WebEMarket.Areas.Admin.Controllers
 
                 if (string.IsNullOrEmpty(tinTuc.Thumb)) tinTuc.Thumb = "default.jpg";
                 tinTuc.Alias = Utilities.SEOUrl(tinTuc.Title);
-
+                tinTuc.CreatedDate = DateTime.Now;
                 _context.Add(tinTuc);
                 await _context.SaveChangesAsync();
                 _notyfService.Success("Thêm tin thành công");
@@ -153,8 +145,8 @@ namespace WebEMarket.Areas.Admin.Controllers
                     tinTuc.Alias = Utilities.SEOUrl(tinTuc.Title);
 
                     _context.Update(tinTuc);
-                    _notyfService.Success("Sửa tin thành công");
                     await _context.SaveChangesAsync();
+                    _notyfService.Success("Sửa tin thành công");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
