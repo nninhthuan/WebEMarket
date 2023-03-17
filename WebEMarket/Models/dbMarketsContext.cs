@@ -283,7 +283,7 @@ namespace WebEMarket.Models
             modelBuilder.Entity<TinTuc>(entity =>
             {
                 entity.HasKey(e => e.PostId)
-                    .HasName("PK__TinTucs__AA1260388C721AE5");
+                    .HasName("PK__TinTucs__AA1260381048C26E");
 
                 entity.Property(e => e.PostId).HasColumnName("PostID");
 

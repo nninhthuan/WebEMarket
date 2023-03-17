@@ -1,14 +1,14 @@
-﻿@model WebEMarket.Models.TinTuc
+﻿@model WebEMarket.Models.Category
 @{
-    ViewData["Title"] = "Xác nhận xoá: " + Model.Title;
+    ViewData["Title"] = "Xác nhận xoá danh mục: " + Model.CatName;
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 <div class="page-header">
     <div class="header-sub-title">
         <nav class="breadcrumb breadcrumb-dash">
-            <a asp-area="Admin" asp-controller="AdminTinTucs" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Quản lý Tin tức</a>
-
-            <span class="breadcrumb-item active">Thông tin page: @Model.Title</span>
+            <a asp-area="Admin" asp-controller="AdminCategories" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Quản lý Pages</a>
+            <i class="breadcrumb-item" asp-area="Admin" asp-controller="AdminCategories" asp-action="Index">Danh sách danh mục </a>
+            <span class="breadcrumb-item active">Thông tin page: @Model.CatName</span>
         </nav>
     </div>
 </div>
@@ -16,11 +16,11 @@
     <div class="d-md-flex m-b-15 align-items-center justify-content-between">
         <div class="media align-items-center m-b-15">
             <div class="avatar avatar-image rounded" style="height: 70px; width:70px">
-                <img src="~/images/news/@Model.Thumb" alt="@Model.Title">
+                <img src="~/images/categories/@Model.Thumb" alt="@Model.Title">
             </div>
             <div class="m-b-15">
-                <h4 class="m-b-0">@Model.Title</h4>
-                <p class="text-muted m-b-0">ID: #@Model.PostId</p>
+                <h4 class="m-b-0">@Model.CatName</h4>
+                <p class="text-muted m-b-0">ID: #@Model.CatId</p>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
             <a class="nav-link active" data-toggle="tab" href="#product-overview">Overview</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#product-images">ẢNH ĐẠI DIỆN</a>
+            <a class="nav-link" data-toggle="tab" href="#product-images">Ảnh đại diện</a>
         </li>
     </ul>
 </div>
@@ -38,15 +38,15 @@
         <div class="tab-pane fade show active" id="product-overview">
             <div class="card">
                 <div class="card-body">
-                    <h1 class="card-title">XÁC NHẬN XOÁ TIN: @Model.Title.ToUpper()</h1>
+                    <h1 class="card-title">XÁC NHẬN XOÁ DANH MỤC: @Model.CatName.ToUpper()</h1>
                     <div class="table-responsive">
-                        <form asp-action="Delete" asp-route-id="@Model.PostId">
-                            <input type="hidden" asp-for="PostId" />
+                        <form asp-action="Delete" asp-route-id="@Model.CatId">
+                            <input type="hidden" asp-for="CatId" />
                             <table class="product-info-table m-t-20">
                                 <tbody>
                                     <tr>
-                                        <td>Page Name:</td>
-                                        <td class="text-dark font-weight-semibold">@Model.Title</td>
+                                        <td>TÊN DANH MỤC:</td>
+                                        <td class="text-dark font-weight-semibold">@Model.CatName</td>
                                     </tr>
                                     <tr>
                                         <td>Alias:</td>
@@ -62,7 +62,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Xác nhận xoá tin:</td>
+                                        <td>Xác nhận xoá danh mục:</td>
                                         <td>
                                             <input type="submit" value="Xác nhận xoá" class="btn btn-danger" />
                                         </td>
@@ -78,7 +78,7 @@
                     <h4 class="card-title">THÔNG TIN MÔ TẢ</h4>
                 </div>
                 <div class="card-body">
-                    @Html.Raw(Model.Contents)
+                    @Html.Raw(Model.Description)
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <img class="img-fluid" src="~/images/news/@Model.Thumb" alt="@Model.Title">
+                            <img class="img-fluid" src="~/images/categories/@Model.Thumb" alt="@Model.Title">
                         </div>
                     </div>
                 </div>

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using WebEMarket.Helper;
 using WebEMarket.Models;
 
 namespace WebEMarket.Areas.Admin.Controllers
@@ -14,15 +17,36 @@ namespace WebEMarket.Areas.Admin.Controllers
     public class AdminTinTucsController : Controller
     {
         private readonly dbMarketsContext _context;
+        public INotyfService _notyfService { get; }
 
-        public AdminTinTucsController(dbMarketsContext context)
+        public AdminTinTucsController(dbMarketsContext context, INotyfService notyfService)
         {
             _context = context;
+            _notyfService = notyfService;
         }
 
         // GET: Admin/AdminTinTucs
-        public IActionResult Index(int? page)
+        public async Task<IActionResult>  Index(int? page)
         {
+            var tin =  _context.TinTucs.Find(2);
+            for(int i = 0; i < 20; i++)
+            {
+                TinTuc tinTuc = new TinTuc();
+                tinTuc.Title = tin.Title;
+                tinTuc.Published = tin.Published;
+                tinTuc.Alias = tin.Alias;
+                tinTuc.IsHot = tin.IsHot;
+                tinTuc.IsNewfeed = tin.IsNewfeed;
+                tinTuc.CreatedDate = tin.CreatedDate;
+                tinTuc.Contents = tin.Contents;
+                tinTuc.MetaDesc = tin.Title;
+                tinTuc.MetaKey = tin.Title;
+
+                _context.Add(tinTuc);
+                await _context.SaveChangesAsync();
+            }
+
+
             //3.2 Paged List uses 3 params: pageNumber, pageSize, IsCustomer
             var pageNumber = page == null || page <= 0 ? 1 : page.Value; //define numbers of page
             var pageSize = 20;
@@ -38,6 +62,7 @@ namespace WebEMarket.Areas.Admin.Controllers
         // GET: Admin/AdminTinTucs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
@@ -64,12 +89,23 @@ namespace WebEMarket.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] TinTuc tinTuc)
+        public async Task<IActionResult> Create([Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] TinTuc tinTuc, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (ModelState.IsValid)
             {
+                if (fThumb != null)
+                {
+                    string extension = Path.GetExtension(fThumb.FileName);
+                    string imageName = Utilities.SEOUrl(tinTuc.Title) + extension;
+                    tinTuc.Thumb = await Utilities.UploadFile(fThumb, @"news", imageName.ToLower());
+                }
+
+                if (string.IsNullOrEmpty(tinTuc.Thumb)) tinTuc.Thumb = "default.jpg";
+                tinTuc.Alias = Utilities.SEOUrl(tinTuc.Title);
+
                 _context.Add(tinTuc);
                 await _context.SaveChangesAsync();
+                _notyfService.Success("Thêm tin thành công");
                 return RedirectToAction(nameof(Index));
             }
             return View(tinTuc);
@@ -96,7 +132,7 @@ namespace WebEMarket.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] TinTuc tinTuc)
+        public async Task<IActionResult> Edit(int id, [Bind("PostId,Title,Scontents,Contents,Thumb,Published,Alias,CreatedDate,Author,AccountId,Tags,CatId,IsHot,IsNewfeed,MetaKey,MetaDesc,Views")] TinTuc tinTuc, Microsoft.AspNetCore.Http.IFormFile fThumb)
         {
             if (id != tinTuc.PostId)
             {
@@ -107,7 +143,17 @@ namespace WebEMarket.Areas.Admin.Controllers
             {
                 try
                 {
+                    {
+                        string extension = Path.GetExtension(fThumb.FileName);
+                        string imageName = Utilities.SEOUrl(tinTuc.Title) + extension;
+                        tinTuc.Thumb = await Utilities.UploadFile(fThumb, @"news", imageName.ToLower());
+                    }
+
+                    if (string.IsNullOrEmpty(tinTuc.Thumb)) tinTuc.Thumb = "default.jpg";
+                    tinTuc.Alias = Utilities.SEOUrl(tinTuc.Title);
+
                     _context.Update(tinTuc);
+                    _notyfService.Success("Sửa tin thành công");
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -152,6 +198,7 @@ namespace WebEMarket.Areas.Admin.Controllers
             var tinTuc = await _context.TinTucs.FindAsync(id);
             _context.TinTucs.Remove(tinTuc);
             await _context.SaveChangesAsync();
+            _notyfService.Success("Xoá tin thành công");
             return RedirectToAction(nameof(Index));
         }
 
