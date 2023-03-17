@@ -30,6 +30,8 @@
                     <tr>
                         <th>ID</th>
                         <th>Tiêu đề</th>
+                        <th>isHot</th>
+                        <th>isNewFeed</th>
                         <th>Trạng Thái</th>
                         <th>#</th>
                     </tr>
@@ -55,6 +57,38 @@
                                         <div class="d-flex align-items-center">
                                             <div class="badge badge-danger badge-dot m-r-10"></div>
                                             <div>Private</div>
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsHot == true)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Hot</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-danger badge-dot m-r-10"></div>
+                                            <div>-</div>
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsNewfeed == true)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <div>Newfeed</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge badge-danger badge-dot m-r-10"></div>
+                                            <div>-</div>
                                         </div>
                                     }
                                 </td>
