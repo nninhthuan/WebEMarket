@@ -39,9 +39,10 @@
                     {
                         foreach (var item in Model)
                         {
+                            string url = $"/page/{item.Alias}";
                             <tr>
                                 <td>@item.PageId </td>
-                                <td>@item.PageName</td>
+                                <td><a target="_blank" href="@url">@item.PageName</td>
                                 <td>
                                     @if(item.Published == true)
                                     {
