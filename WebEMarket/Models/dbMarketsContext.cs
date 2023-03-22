@@ -25,6 +25,7 @@ namespace WebEMarket.Models
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Page> Pages { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<QuangCao> QuangCaos { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
         public virtual DbSet<TinTuc> TinTucs { get; set; }
@@ -254,6 +255,35 @@ namespace WebEMarket.Models
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CatId)
                     .HasConstraintName("FK_Products_Categories");
+            });
+
+            modelBuilder.Entity<QuangCao>(entity =>
+            {
+                entity.ToTable("QuangCao");
+
+                entity.Property(e => e.QuangCaoId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ImageBg)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ImageProduct)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.SubTitle)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.UrlLink)
+                    .IsRequired()
+                    .HasMaxLength(255);
             });
 
             modelBuilder.Entity<Role>(entity =>
