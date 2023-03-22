@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -6,21 +7,62 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebEMarket.Models;
+using WebEMarket.ModelViews;
 
 namespace WebEMarket.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly dbMarketsContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, dbMarketsContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            //Step1: Start Home by itself
+            HomeViewVM model = new HomeViewVM();
+
+            //Step2: Take the products based on HomeFlag - homeflag is product true then show on home view
+            var lsProducts = _context.Products.AsNoTracking()
+                .Where(x => x.Active == true && x.HomeFlag == true)
+                .OrderByDescending(x => x.DateCreated)
+                .ToList();
+
+            List<ProductHomeVM> lsProductViews = new List<ProductHomeVM>();
+            var lsCats = _context.Categories
+                .AsNoTracking()
+                .Where(x => x.Published == true)
+                .OrderByDescending(x => x.Ordering)
+                .ToList();
+
+            foreach (var item in lsCats)
+            {
+                ProductHomeVM productHome = new ProductHomeVM();
+                productHome.category = item;
+                productHome.lsProducts = lsProducts.Where(x => x.CatId == item.CatId).ToList();
+                lsProductViews.Add(productHome);
+
+                var quangcao = _context.QuangCaos
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.Active == true);
+
+                var TinTuc = _context.TinTucs
+                    .AsNoTracking()
+                    .Where(x => x.Published == true && x.IsNewfeed == true)
+                    .OrderByDescending(x => x.CreatedDate)
+                    .Take(3)
+                    .ToList();
+                model.Products = lsProductViews;
+                model.quangcao = quangcao;
+                model.TinTucs = TinTuc;
+                ViewBag.AllProducts = lsProducts;
+            }
+            return View(model);
         }
 
         [Route("lien-he.html", Name = "Contact")]

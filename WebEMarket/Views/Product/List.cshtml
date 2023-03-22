@@ -2,7 +2,8 @@
 @using PagedList.Core.Mvc
 @model PagedList.Core.IPagedList<WebEMarket.Models.Product>
 @{
-    ViewData["Title"] = "Shop - " + ViewBag.CurrentPage;
+    Category category = ViewBag.CurrentCat;
+    ViewData["Title"] = category.Title + " " + ViewBag.CurrentPage;
     Layout = "~/Views/Shared/_Layout.cshtml";
     int PageCurrent = ViewBag.CurrentPage;
     int PageNext = PageCurrent + 1;
@@ -15,12 +16,12 @@
             <div class="row h-100">
                 <div class="col-lg-12">
                     <div class="breadcrumb-item">
-                        <h1 class="breadcrumb-heading">SIÊU THỊ ĐÀ NẴNG ONLINE</h1>
+                        <h1 class="breadcrumb-heading">@category.CatName</h1>
                         <ul>
                             <li>
                                 <a href="/">Home <i class="pe-7s-angle-right"></i></a>
                             </li>
-                            <li>DANH SÁCH SẢN PHẨM</li>
+                            <li>@category.CatName</li>
                         </ul>
                     </div>
                 </div>
@@ -178,7 +179,7 @@
                                                     </a>
                                                 </div>
                                                 <div class="product-content">
-                                                    <a class="product-name" href="single-product.html">Natural Coconut</a>
+                                                     <a class="product-name" href="single-product.html">Natural Coconut</a>
                                                     <div class="price-box pb-1">
                                                         <span class="new-price">$80.00</span>
                                                     </div>
@@ -397,7 +398,7 @@
                     @*Paged List Interface*@
                     <div aria-label="pagination-area pt-10">
                         <ul class="pagination justify-content-center">
-                            <pager class="pager-container" options="@PagedListRenderOptions.Bootstrap4PageNumbersOnly" list="@Model" asp-area="" asp-controller="Product" asp-action="Index" />
+                            <pager class="pager-container" options="@PagedListRenderOptions.Bootstrap4PageNumbersOnly" list="@Model" asp-area="" asp-controller="Product" asp-route-Alias="@category.Alias" asp-action="List" />
                         </ul>
                     </div>
                 </div>
