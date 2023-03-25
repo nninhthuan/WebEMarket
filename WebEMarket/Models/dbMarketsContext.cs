@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using WebEMarket.ModelViews;
 
 #nullable disable
 
@@ -166,6 +167,8 @@ namespace WebEMarket.Models
                 entity.Property(e => e.OrderId).HasColumnName("OrderID");
 
                 entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+
+                entity.Property(e => e.LocationId).HasColumnName("LocationID");
 
                 entity.Property(e => e.OrderDate).HasColumnType("datetime");
 
@@ -357,5 +360,7 @@ namespace WebEMarket.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<WebEMarket.ModelViews.ChangePasswordViewModel> ChangePasswordViewModel { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace WebEMarket.Extensions
     {
         public static string ToMD5(this string str)
         {
+            //Ham ma hoa mat khau
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             byte[] bHash = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
             StringBuilder sbHash = new StringBuilder();
